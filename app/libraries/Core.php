@@ -15,7 +15,6 @@ class Core{
 			$this->currentController = ucwords($url[0]);
 			// Unset 0 index
 			unset($url[0]);
-		}
 		// require the controller
 		require_once '../app/controllers/' . $this->currentController . '.php';
 		// Instantiate controller class
@@ -33,6 +32,15 @@ class Core{
 		$this->params = $url ? array_values($url) : [];
 		// Call a callback wit array of params
 		call_user_func_array([$this->currentController,$this->currentMethod], $this->params);
+		// Get params
+		$this->params = $url ? array_values($url) : [];
+		// Call a callback wit array of params
+		call_user_func_array([$this->currentController,$this->currentMethod], $this->params);
+		}
+		elseif($url[0] == "api" && is_dir('../app/api/' . $url[1]) && file_exists('../app/api/' . $url[1] . "/" . $url[2])){
+			// echo "it worked";
+			include '../app/api/' . $url[1] . '/' . $url[2];
+		}
 	}
 	public function getUrl(){
 		if(isset($_GET['url'])){

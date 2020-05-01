@@ -106,7 +106,11 @@ class Post{
 		if($myposts_page == "" || $myposts_page == 1){
 			$myposts_page_1 = 0;
 		}else{
-			$myposts_page_1 = ($myposts_page * $per_myposts_page)-$per_myposts_page;
+			if(is_int($myposts_page) && is_int($per_myposts_page) && is_int($per_myposts_page)){
+				$myposts_page_1 = ($myposts_page * $per_myposts_page)-$per_myposts_page;
+			}else{
+				$myposts_page_1 = 0;
+			}
 		}
 		$this->db->query("SELECT * FROM posts WHERE post_user_id = :post_user_id ORDER BY post_id DESC LIMIT :myposts_page_1,:per_myposts_page");
 		$this->db->bind(':post_user_id', $_SESSION['user_id']);
@@ -131,7 +135,11 @@ class Post{
 		if($myfriends_posts_page == "" || $myfriends_posts_page == 1){
 			$myfriends_posts_page_1 = 0;
 		}else{
-			$myfriends_posts_page_1 = ($myfriends_posts_page * $per_myfriends_posts_page)-$per_myfriends_posts_page;
+			if(is_int($myfriends_posts_page) && is_int($per_myfriends_posts_page) && is_int($per_myfriends_posts_page)){
+				$myfriends_posts_page_1 = ($myfriends_posts_page * $per_myfriends_posts_page)-$per_myfriends_posts_page;
+			}else{
+				$myfriends_posts_page_1 = 0;
+			}
 		}
 		$published = "published";
 		$this->db->query("SELECT posts.post_id, posts.post_user_id, posts.post_category_id, posts.post_title, posts.post_author, posts.post_date, posts.post_image, posts.post_content, posts.post_comment_count, posts.post_status, posts.post_views_count, posts.post_rating, posts.post_likes_count, posts.post_dislikes_count, friends.user_id, friends.friend_id FROM posts LEFT JOIN friends ON posts.post_user_id = friends.friend_id WHERE friends.user_id = :current_user_id AND posts.post_status = :published ORDER BY posts.post_id DESC LIMIT :myfriends_posts_page_1,:per_myfriends_posts_page");

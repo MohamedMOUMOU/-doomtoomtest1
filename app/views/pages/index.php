@@ -15,10 +15,14 @@ $count_myfriends_posts = $data['count_myfriends_posts'];
 $per_myfriends_posts_page = $data['per_myfriends_posts_page'];
 $count_myfriends_posts_for_pagination = ceil($count_myfriends_posts/$per_myfriends_posts_page);
 $count_myposts_for_pagination = ceil($count_myposts/$per_myposts_page);
+if(is_int($myposts_page) && is_int($myposts_page) && is_int($myfriends_posts_page) && is_int($myfriends_posts_page)){
 $back_myposts = $myposts_page - 1;
 $for_myposts = $myposts_page + 1;
 $back_myfriends_posts = $myfriends_posts_page - 1;
 $for_myfriends_posts = $myfriends_posts_page + 1;
+}else{
+	
+}
 ?>
 <div role="main" class="container-fluid" style="margin-top: 70px;">
 	<div class="row">

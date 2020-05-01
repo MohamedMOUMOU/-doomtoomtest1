@@ -7,6 +7,7 @@ class Users extends Controller {
 		$this->profiledislikesController = $this->controller('Profiledislikes');
 		$this->usersgalleriesController = $this->controller('Usersgalleries');
 		$this->groupsController = $this->controller('Groups');
+		$this->chatModel = $this->model('Chat');
 		$this->userModel = $this->model('User');
 		$this->searchModel = $this->model('Search');
 		$this->db = new Database();
@@ -495,6 +496,7 @@ class Users extends Controller {
 	public function get_friends(){
 		$data = $this->userModel->get_friends();
 		foreach ($data['friends'] as $friend) {
+			$last = $this->chatModel->read_last($_SESSION['user_id'],$friend->user_id);
 			?>
 			<?php
 			if($friend->user_image === "unknown-profile.jpg"){
@@ -504,23 +506,47 @@ class Users extends Controller {
 			}else{
 				$friend_image = URLROOT . "/images/users_images/" . $friend->user_name . "_images/profile_images/" . $friend->user_image;
 			}
-			if($friend->user_online === 'o'){
-				$o_or_f = '<p style="display: block;margin-top: -10px;color:#7aff7a">online</p>';
-			}else{
-				$o_or_f = '<p style="display: block;margin-top: -10px;color:#ff7a7a">offline</p>';
-			}
 			?>
-			<div class='row pt-2 ml-1 mr-1 friend-<?php echo $friend->user_id; ?>' style="border-radius: 10px;margin-bottom: 13px;">
-				<div class='col-3'>
-					<a href="<?php echo URLROOT . "/chats/read/" . $_SESSION['user_id'] . "/" . $friend->user_id; ?>"><img style='height: 60px;width: 60px;border-radius:50px;' src='<?php echo $friend_image; ?>'>
-					</a>
-				</div>
-				<div class="col-9">
-					<?php echo "<a style='color:black;text-decoration:none;' href='" . URLROOT . "/chats/read/" . $_SESSION['user_id'] . "/" . $friend->user_id . "'><p style='display: block;'>" . $friend->user_name . "</p></a>";
-					echo $o_or_f; ?>
-				</div>
-			</div>
-			<hr>
+			<a href="<?php echo URLROOT . "/chats/read/" . $_SESSION['user_id'] . "/" . $friend->user_id; ?>" class="list-group-item list-group-item-action list-group-item-light rounded-0">
+              <div class="media">
+				<?php if($friend->user_online === 'o'){ ?>
+              	<img src="<?php echo $friend_image; ?>" alt="user" width="50" height="50" style="border: 2px solid;border-color:black;border-radius:250px;border-color:#7aff7a;">
+              <?php }else{ ?>
+				<img src="<?php echo $friend_image; ?>" alt="user" width="50" height="50" style="border: 2px solid;border-color:black;border-radius:250px;border-color:#ff7a7a;">
+              <?php } ?>
+                <div class="media-body ml-4">
+                  <div class="mb-1">
+                  	<span>
+                    	<h5 class="mb-0 mt-1"><?php echo $friend->user_name; ?></h5>
+                	</span>
+                	<span class="">
+                    <small class="" style="font-weight: 100;">
+                    	<?php
+        					foreach ($last as $last_message) {
+								if($last_message->sender_id == $_SESSION['user_id']){
+									if(strlen($last_message->message)>35){
+										echo "you : " . substr($last_message->message,0,35) . "...";
+									}else{
+										echo "you : " . substr($last_message->message,0,35);
+									}
+								}else{
+									echo $friend->user_name . " : " . $last_message->message;
+								}
+							}
+                    	?>
+                    </small>
+                    <small class="" style="float: right;">
+                    	<?php
+        					foreach ($last as $last_message) {
+								echo chat_dates2($last_message->creation_time);
+							}
+                    	?>
+                    </small>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </a>
 			<?php
 		}
 	}

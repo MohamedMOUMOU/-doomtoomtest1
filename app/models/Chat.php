@@ -19,6 +19,15 @@ class Chat{
 		$messages = $this->db->resultSet();
 		return $messages;
 	}
+	public function read_last($sender_id,$receiver_id){
+		$this->db->query("SELECT sender_id,message,creation_time FROM chat_messages WHERE ((sender_id = :sender_id AND receiver_id = :receiver_id) OR (sender_id = :receiver_id AND receiver_id = :sender_id)) AND delete_for_me != :delete_for_me AND delete_o_for_me != :delete_o_for_me AND !delete_for_everyone ORDER BY id DESC LIMIT 1");
+		$this->db->bind(':sender_id', $sender_id);
+		$this->db->bind(':receiver_id', $receiver_id);
+		$this->db->bind(':delete_for_me', 1 . "-" . $_SESSION['user_id']);
+		$this->db->bind(':delete_o_for_me', 1 . "-" . $_SESSION['user_id']);
+		$messages = $this->db->resultSet();
+		return $messages;
+	}
 	public function count($sender_id,$receiver_id){
 		$this->db->query("SELECT sender_id,message FROM chat_messages WHERE (sender_id = :sender_id AND receiver_id = :receiver_id) OR (sender_id = :receiver_id AND receiver_id = :sender_id) ORDER BY id ASC");
 		$this->db->bind(':sender_id', $sender_id);

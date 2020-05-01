@@ -62,6 +62,7 @@ if(isset($_GET['offlinefriends'])) {
 if(isset($_GET['online_friend_chat'])) {
 	require_once '../app/libraries/Controller.php';
 	require_once '../app/config/config.php';
+	require_once '../app/helpers/manage_dates.php';
 	require_once '../app/libraries/Database.php';
 	require_once '../app/controllers/Users.php';
 	session_start();
