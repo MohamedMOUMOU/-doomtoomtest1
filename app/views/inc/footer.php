@@ -1,4 +1,4 @@
-
+<script src="https://use.fontawesome.com/af66a1bb2a.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT; ?>\node_modules\@ckeditor\ckeditor5-build-classic\build\ckeditor.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT; ?>\node_modules\jquery\dist\jquery.js"></script>
 <script src="<?php echo URLROOT; ?>\node_modules\bootstrap\dist\js\bootstrap.min.js"></script>

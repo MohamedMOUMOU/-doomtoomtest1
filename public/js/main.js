@@ -3,39 +3,6 @@ $(document).ready(function(){
 	$('.flash-message').fadeOut(4000,0,function(){
 	$(".con").slideDown(1000);
 })});*/
-$('.slick-prev').css({'display':'none'});
-$(".edit_profile_image").on('click', function(){
-	$("#myModal").modal("show");
-});
-$('.thing').slick({
-	adaptiveHeight: true,
-});
-$('.friendship_requests').slick({
-	adaptiveHeight: true,
-	centerMode: true,
-
-});
-$('.thing1').slick({
-	adaptiveHeight: true,
-});
-$(".con").slideDown();
-$('.close-flash-message').click('on',function(){
-	$('.flash-message').animate({"opacity": "0"},500,function(){;
-		$(".con").css("z-index",'-1');
-		$(".con").css("background-color",'');
-});
-});
-$('.con').click('on',function(){
-	$('.flash-message').animate({"opacity": "0"},500,function(){;
-		$(".con").css("z-index",'-1');
-		$(".con").css("background-color",'');
-});
-});
-$(".con").delay(2000).fadeOut(1000,function(){
-		$(".con").css("z-index",'-1');
-		$(".con").css("background-color",'');
-		$(".con").css("display","none")
-});
 // $("#image-posts").hover(function(){
 // 	$(this).css("zIndex","20");
 // 	$(this).animate({height:"+=20px"},1000);

@@ -8,6 +8,7 @@ class Users extends Controller {
 		$this->usersgalleriesController = $this->controller('Usersgalleries');
 		$this->groupsController = $this->controller('Groups');
 		$this->chatModel = $this->model('Chat');
+		$this->likesController = $this->controller('Likes');
 		$this->userModel = $this->model('User');
 		$this->searchModel = $this->model('Search');
 		$this->db = new Database();
@@ -372,10 +373,10 @@ class Users extends Controller {
 		<?php endforeach; ?>
 		</div>
 		<?php if($this->getUsersOnlineCount() == 0){
-			echo "<p class='text-muted text-center'>--no friend is online--</p>";
+			echo "<p class='text-muted text-center'>--no available discussions--</p>";
 		}
 		if($this->getUsersOnlineCount() > 6){ ?>
-		<a href="<?php echo URLROOT . "/chats/read/{$_SESSION['user_id']}/start"; ?>" class="pull-right">see more &raquo;</a><br>
+		<br>
 <?php
 		}
 	}
@@ -398,9 +399,8 @@ class Users extends Controller {
 		</div>
 		<?php
 		if($this->getUsersOfflineCount() == 0){
-			echo "<p class='text-muted text-center'>--no friend is offline--</p>";
+			echo "<p class='text-muted text-center'>--All discussions are available--</p>";
 		}if($this->getUsersOfflineCount() > 6){ ?>
-		<a href="<?php echo URLROOT . "/chats/read/{$_SESSION['user_id']}/start"; ?>" class="pull-right">see more &raquo;</a>
 		<br>
 <?php
 		}
@@ -423,6 +423,7 @@ class Users extends Controller {
 			'count_posts' => $post->count_posts($user_id),
 			'count_friends' => $this->userModel->count_friends($user_id),
 			'user_info' => $this->userModel->findUserById($user_id),
+			'posts_info' => $post->show_posts_by_user_id($user_id)
 		];
 		$this->view('users/profile', $data);
 	}
@@ -528,6 +529,7 @@ class Users extends Controller {
 										echo "you : " . substr($last_message->message,0,35) . "...";
 									}else{
 										echo "you : " . substr($last_message->message,0,35);
+										echo manage_urls();
 									}
 								}else{
 									echo $friend->user_name . " : " . $last_message->message;

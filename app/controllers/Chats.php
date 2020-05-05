@@ -6,8 +6,7 @@ class Chats extends Controller {
 	}
 	public function read($sender_id,$receiver_id){
 		$user = new Users();
-		$is_friend = $user->is_friend($receiver_id);
-		if($sender_id === $_SESSION['user_id'] && $is_friend){
+		if($sender_id === $_SESSION['user_id']){
 			$data = [
 				'logged_in_user' => $user->getUserInfo(),
 				'receiver' => $user->findUserById($receiver_id),

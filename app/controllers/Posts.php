@@ -28,6 +28,8 @@ class Posts extends Controller {
 				'post_image_err' => '',
 				'post_status' => $_POST['post_status'],
 				'post_status_err' => '',
+				'post_request_help' => $_POST['post_request_help'],
+				'post_request_help_err' => '',
 				'cat_info' => $cat_info,
 			];
 			// validate data
@@ -68,6 +70,56 @@ class Posts extends Controller {
 				'cat_info' => $cat_info,
 			];
 			$this->view('posts/add',$data);
+		}
+	}
+	public function adiary(){
+		// check for POST
+		$category = new Categories;
+		$cat_info = $category->selectCategories();
+		if($_SERVER['REQUEST_METHOD'] == 'POST'){
+			// Process form
+			// Sanitize POST data
+			$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+		if(isset($_POST['add_post'])){
+			// Init data
+			$data = [
+				'post_title' => $_POST['post_title'],
+				'post_title_err' => '',
+				'post_content' => $_POST['post_content'],
+				'post_content_err' => '',
+				'diary_lesson_learnt' => $_POST['diary_lesson_learnt'],
+				'diary_lesson_learnt_err' => '',
+				'post_status' => $_POST['post_status'],
+				'post_status_err' => '',
+				'post_request_help' => $_POST['post_request_help'],
+				'post_request_help_err' => '',
+				'cat_info' => $cat_info,
+			];
+			// validate data
+			if(empty($data['post_title'])){
+				$data['post_title_err'] = 'The post title can not be empty';
+			}
+			if(empty($data['post_status'])){
+				$data['post_status_err'] = 'The post status can not be empty';
+			}
+			if(empty($data['post_title_err']) && empty($data['post_content_err'])){
+				$this->postModel->insertDiaryData($data);
+					redirect('pages/index');
+			}else{
+				$this->view('posts/addiary', $data);
+			}
+		}}else{
+			// Init data
+			$data = [
+				'post_title' => '',
+				'post_title_err' => '',
+				'post_content' => '',
+				'post_content_err' => '',
+				'diary_lesson_learnt' => '',
+				'diary_lesson_learnt_err' => '',
+				'cat_info' => $cat_info,
+			];
+			$this->view('posts/adiary',$data);
 		}
 	}
 	public function edit($post_id){
@@ -170,5 +222,9 @@ class Posts extends Controller {
 	public function count_posts($post_user_id){
 		$count_posts = $this->postModel->count_posts($post_user_id);
 		return $count_posts;
+	}
+	public function show_posts_by_user_id($user_id){
+		$show_posts_by_user_id = $this->postModel->show_posts_by_user_id($user_id);
+		return $show_posts_by_user_id;
 	}
 }

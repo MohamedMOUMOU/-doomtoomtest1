@@ -9,6 +9,12 @@ class Like extends Controller {
 		$this->db->bind(':post_id', $post_id);
 		$this->db->execute();
 		$count3 = $this->db->rowCount();
+		$this->db->query("SELECT post_user_id FROM posts WHERE post_id = :post_id");
+		$this->db->bind(':post_id', $post_id);
+		$res = $this->db->single();
+		$this->db->query("SELECT feel_better_count FROM users WHERE user_id = :post_user_id");
+		$this->db->bind(':post_user_id', $res->post_user_id);
+		$resu = $this->db->single();
 		if($count3 === 1){
 			$this->db->query("UPDATE dislikes SET disliked = 0 WHERE user_id = :current_user_id AND post_id = :post_id");
 			$this->db->bind(':current_user_id', $_SESSION['user_id']);
@@ -33,6 +39,11 @@ class Like extends Controller {
 			$this->db->execute();
 			$this->update_post_likes_count($post_id);
 			$this->update_post_dislikes_count($post_id);
+			$f_count = $resu->feel_better_count - 1;
+			$this->db->query("UPDATE users SET feel_better_count = :feel_better_count WHERE user_id = :post_user_id");
+			$this->db->bind(':feel_better_count', $f_count);
+			$this->db->bind(':post_user_id', $res->post_user_id);
+			$this->db->execute();
 		}elseif($count2 === 1){
 			$this->db->query("UPDATE likes SET likes = 1 WHERE user_id = :current_user_id AND post_id = :post_id");
 			$this->db->bind(':current_user_id', $_SESSION['user_id']);
@@ -40,6 +51,11 @@ class Like extends Controller {
 			$this->db->execute();
 			$this->update_post_likes_count($post_id);
 			$this->update_post_dislikes_count($post_id);
+			$f_count = $resu->feel_better_count + 1;
+			$this->db->query("UPDATE users SET feel_better_count = :feel_better_count WHERE user_id = :post_user_id");
+			$this->db->bind(':feel_better_count', $f_count);
+			$this->db->bind(':post_user_id', $res->post_user_id);
+			$this->db->execute();
 		}else{
 			$this->db->query("INSERT INTO likes(user_id,post_id,likes) VALUES(:current_user_id,:post_id,1)");
 			$this->db->bind(':current_user_id', $_SESSION['user_id']);
@@ -47,6 +63,13 @@ class Like extends Controller {
 			$this->db->execute();
 			$this->update_post_likes_count($post_id);
 			$this->update_post_dislikes_count($post_id);
+			$this->db->query("SELECT post_user_id FROM posts WHERE post_id = :post_id");
+			$this->db->bind(':post_id', $post_id);
+			$f_count = $resu->feel_better_count + 1;
+			$this->db->query("UPDATE users SET feel_better_count = :feel_better_count WHERE user_id = :post_user_id");
+			$this->db->bind(':feel_better_count', $f_count);
+			$this->db->bind(':post_user_id', $res->post_user_id);
+			$this->db->execute();
 		}
 	}
 	public function liked($post_id){

@@ -12,28 +12,15 @@ class Groups extends Controller {
 			$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 		if(isset($_POST['add_group'])){
 			$user = new Users();
-			// Init data
-			$i = 0;
-			if(isset($_POST['members_ids'])){
-				foreach($_POST['members_ids'] as $member_id){
-					$members_ids_array[$i] = $member_id;
-					$i++;
-				}
-				$members_ids = join(",", $members_ids_array);
-			}else{
-				$members_ids = "";
-			}
 			$data = [
 				'group_name' => $_POST['group_name'],
 				'group_name_err' => '',
+				'group_theme' => $_POST['group_theme'],
+				'group_theme_err' => '',
 				'group_image' => $_FILES['group_image'],
 				'group_image_err' => '',
 				'group_b_image' => $_FILES['group_b_image'],
-				'group_b_image_err' => '',
-				'members_ids' => $members_ids,
-				'members_ids_err' => '',
-				'friends' => $user->get_friends_list(),
-				'count_friends' => $user->get_friends_count(),
+				'group_b_image_err' => ''
 			];
 			// validate data
 			$found_group = false;
@@ -50,17 +37,6 @@ class Groups extends Controller {
 			}
 			if($found_group){
 				$data['group_name_err'] = 'This has already existed';
-			}
-			if(strlen($members_ids) >= 1){
-				if(empty($members_ids_array[0])){
-					$data['members_ids_err'] = 'The group must at least have two members';
-				}elseif (empty($members_ids_array[1])) {
-					$data['members_ids_err'] = 'The group must at least have two members';
-				}
-			}else{
-				if(empty($members_ids)){
-					$data['members_ids_err'] = 'The group must at least have two members';
-				}
 			}
 			if(empty($data['group_name_err']) && empty($data['members_ids_err'])){
 				if(!$found_group){
@@ -86,12 +62,12 @@ class Groups extends Controller {
 			$data = [
 				'group_name' => '',
 				'group_name_err' => '',
+				'group_theme' => '',
+				'group_theme_err' => '',
 				'group_image' => '',
 				'group_image_err' => '',
 				'group_b_image' => '',
 				'group_b_image_err' => '',
-				'members_ids' => '',
-				'members_ids_err' => '',
 				'friends' => $user->get_friends_list(),
 				'count_friends' => $user->get_friends_count(),
 			];
@@ -148,8 +124,10 @@ class Groups extends Controller {
 					<?php
 					if(!$user->is_friend($member->user_id)){
 						echo "<p><span class='text-muted'>" . $member->user_name . "<span></p>";
-					}else{
+					}elseif($user->is_friend($member->user_id)){
 						echo "<p><a style='color:black;text-decoration:none;' href='" . URLROOT . "/chats/read/" . $_SESSION['user_id'] . "/" . $member->user_id . "'><span>" . $member->user_name . "<span></a></p>";
+					}else{
+						echo "No meember is in this gathering";
 					}
 					echo $o_or_f;?>
 				</div>
@@ -159,6 +137,7 @@ class Groups extends Controller {
 			<?php endif; ?>
 			<?php
 		}
+	
 	}
 	public function verify_member_ship($group_id){
 		$group = $this->groupModel->find_group_by_id($group_id);
@@ -328,6 +307,18 @@ class Groups extends Controller {
 	public function find_group_by_id($group_id){
 		$group = $this->groupModel->find_group_by_id($group_id);
 		return $group;
+	}
+	public function readgroups(){
+		$user = new Users();
+		$data = [
+			'logged_in_user' => $user->getUserInfo(),
+			'readgroups' => $this->groupModel->readgroups()
+		];
+		$this->view('groups/readgroups', $data);
+	}
+	public function joingroup($group_id){
+		$joingroup = $this->groupModel->joingroup($group_id);
+		$this->view('groups/read/' . $group_id);
 	}
 }
 ?>

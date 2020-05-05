@@ -6,6 +6,7 @@ class Likes extends Controller {
 	public function likePost($post_id){
 		$like = $this->likesModel->likePost($post_id);
 		header('Location: ' . $_SERVER['HTTP_REFERER']);
+		die();
 		return $like;
 	}
 	public function liked($post_id){

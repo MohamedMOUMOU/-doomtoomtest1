@@ -4,7 +4,7 @@
 <?php flash("not change profile image"); ?>
 <?php flash("not change pbi image"); ?>
 <?php flash("not change self description"); ?>
-    <div class="container-fluid">
+    <div class="container">
         <div class="row first-row">
         	<?php
         	if($data['user_info']->user_pbi == "default-pbi.png"){
@@ -58,88 +58,29 @@
 			    </div>
 			  </div>
 			</div>
-						<?php
-				$user = new Users();
-				$message = $user->userInProfile($data['user_info']->user_id);
-				?>
-				<div class="buttons-section" style="">
-				<?php
-				if($message == "accept"):
-					?>
-					<div class="text-center">
-						<form action="<?php echo URLROOT; ?>/users/accept/<?php echo $users->user_id; ?>" method="post" class="">
-							<input type="submit" class="btn btn-primary btn-block" name="accept_request<?php echo $users->user_id ; ?>" value="confirm">
-						</form>
-						<form action="<?php echo URLROOT; ?>/users/deny/<?php echo $users->user_id; ?>" method="post" class="">
-							<input type="submit" class="btn btn-warning btn-block" name="deny_request<?php echo $users->user_id; ?>" value="deny">
-						</form>
+			<div class="buttons-section" style="float:left">
+								<?php
+                if($message == "block"):
+                ?>
+                	<a href="<?php echo URLROOT . "/chats/read/{$_SESSION['user_id']}/{$data['user_info']->user_id}" ?>" style="border-radius: 0px;" style="background-color: rgb(255, 179, 128);" class="btn"> Send message</a>
+                <?php
+                else:
+                    ?>
+					<form action="<?php echo URLROOT; ?>/users/accept/<?php echo $data['user_info']->user_id; ?>" method="post" class="">
+                        <input type="submit" style="border-radius: 0;" style="background-color: rgb(255, 179, 128);" class="btn" name="accept_request<?php echo $data['user_info']->user_id ; ?>" value="send message">
+                    </form>                    <?php
+                endif;
+                ?></div>
+							</div>
+						</div>
 					</div>
-					<?php
-				elseif($message == "not friend"):
-					if($data['user_info']->user_id !== $_SESSION['user_id']):
-					?>
-					<form style="display: inline;" action="<?php echo URLROOT; ?>/users/add/<?php echo $data['user_info']->user_id; ?>" method="post">
-						<input type="submit" class="btn btn-primary" name="send_request<?php echo $data['user_info']->user_id; ?>" value="Add as a friend">
-					</form>
-					<?php
-					endif;
-				elseif($message == "block"):
-						?>
-						<form style="display: inline;" action="<?php echo URLROOT; ?>/users/block/<?php echo $data['user_info']->user_id; ?>" method="post">
-							<input type="submit" class="btn btn-danger" name="block<?php echo $data['user_info']->user_id ; ?>" value="block">
-						</form>
-						<a href="<?php echo URLROOT . "/chats/read/{$_SESSION['user_id']}/{$data['user_info']->user_id}"; ?>" class="btn btn-primary">Send a message</a>
-					<?php
-				else:
-					echo "<p class='ml-1 mr-1 text-muted' style='font-size: 12px;'>" . $message . "</p>";
-				endif;
-			?>
-			<?php
-			if($data['liked']){
-				?>
-					<style>
-						.like_button{
-							background-color: #7c7cff;
-						}
-					</style>
-				<?php
-			}else{
-				?>
-					<style>
-						.like_button{
-							background-color: gray;
-						}
-					</style>
-				<?php
-			}
-			?>
-			<?php
-			if($data['disliked']){
-				?>
-					<style>
-						.dislike_button{
-							background-color: #ff7a7a;
-						}
-					</style>
-				<?php
-			}else{
-				?>
-					<style>
-						.dislike_button{
-							background-color: gray;
-						}
-					</style>
-				<?php
-			}
-			?>
-			<form style="display: inline;" action="<?php echo URLROOT . "/profilelikes/likeProfile/" . $data['user_info']->user_id; ?>" onsubmit="return likeSubmit();">
-				<button class="btn btn-primary like_button" style="border-color:transparent;"><i class="fa fa-thumbs-up"><span style="margin-left:4px;"><?php echo $data['user_info']->profile_likes_count ?></span></i></button>
-			</form>
-			<form style="display: inline;" action="<?php echo URLROOT . "/profiledislikes/dislikeProfile/" . $data['user_info']->user_id; ?>" onsubmit="return likeSubmit();">
-				<button class="btn btn-danger dislike_button" style="border-color:transparent;"><i class="fa fa-thumbs-down"><span style="margin-left:4px;"><?php echo $data['user_info']->profile_dislikes_count ?></span></i></button>
-			</form>
 			</div>
-			<div class="self-desc-card"><h5>Self description :<i style="cursor: pointer;" data-toggle="modal" data-target="#self-description" class="fa fa-edit pull-right"></i></h5><div class="scroll-self-desc self-desc-text"><?php echo (!empty($data['user_info']->user_self_description)) ? $data['user_info']->user_self_description : "<h3 class='text-center' style='padding-top: 37px;'>this field is empty</h3>"; ?></div></div>
+        </div>
+	</div>
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-3 mt-3">
+				<div><h5>Self description :<i style="cursor: pointer;" data-toggle="modal" data-target="#self-description" class="fa fa-edit pull-right"></i></h5><div class="scroll-self-desc self-desc-text"><?php echo (!empty($data['user_info']->user_self_description)) ? $data['user_info']->user_self_description : "<h3 class='text-center' style='padding-top: 37px;'>this field is empty</h3>"; ?></div></div>
             <div class="modal fade" id="self-description" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			  <div class="modal-dialog" role="document">
 			    <div class="modal-content">
@@ -158,27 +99,73 @@
 			    </div>
 			  </div>
 			</div>
-            <div class="left-first-row-bar">
-            	<div class="text-center left-first-row-bar-items">
-            		<i class="fa fa-file items-icons"></i>
-            		<span style="display: block;"><?php echo $data['count_posts'] ?></span>
-            	</div>
-            	<div class="text-center left-first-row-bar-items">
-            		<i class="fa fa-users items-icons"></i>
-            		<span style="display: block;"><?php echo $data['count_friends'] ?></span>
-            	</div>
-				<div class="text-center left-first-row-bar-items">
-            		<i class="fa fa-comments items-icons"></i>
-            		<span style="display: block;">?</span>
-            	</div>
-            </div>
-        </div>
-	</div>
-	<div class="container mt-5">
-		<div class="row">
-			<div class="col-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident a quibusdam, illum. Pariatur tempora harum repudiandae, nihil iste impedit, obcaecati inventore iusto quisquam blanditiis accusamus in quod ipsa porro, unde!</div>
-			<div class="col-9">
-				
+			</div>
+			<div class="col-9 mt-3">
+				<?php
+				foreach ($data['posts_info'] as $myposts) { ?>
+					<div class="card mb-4">
+					<?php
+                if ($myposts->post_image):
+                $post_user = $user->findUserById($myposts->post_user_id);
+                $post_user_name = $post_user->user_name;
+                ?><img class='card-img-top' style="width:100%" src="<?php echo URLROOT . "/images/posts_images/" . $post_user_name .  "_images/" . $myposts->post_image ?>" alt='Card image cap'>
+				<div class="card-body">
+	              <h2 class="card-title"><?php echo $myposts->post_title ?></h2>
+	              <p class="card-text"><?php echo $myposts->post_content; ?></p>
+	      			<?php
+					$likes = new Likes();
+					$post = new Posts();
+					$user = new Users();
+					if($post->post_is_viewed($myposts->post_id)){
+						?>
+						<style type="text/css">
+							.post_title{
+								color : #ffb380;
+							}
+						</style>
+						<?php
+					}
+					if($likes->liked($myposts->post_id)){
+						?>
+						<style type="text/css">
+							.like_icon_<?php echo $myposts->post_id; ?>{
+								color: #ffb380;
+							}
+							.like_icon_<?php echo $myposts->post_id; ?>:hover{
+								color: #ffb380;
+							}
+						</style>
+						<?php
+					}else{
+						?>
+						<style type="text/css">
+							.like_icon_<?php echo $myposts->post_id; ?>{
+							  color: grey;
+							}
+							.like_icon_<?php echo $myposts->post_id; ?>:hover{
+							  color: #ffb380;
+							}
+						</style>
+					<?php } 
+					?>
+						</div><div class="card-footer">
+					<div class="d-flex justify-content-between">
+  					<div class="p-2"><form action="<?php echo URLROOT . "/likes/likePost/" . $myposts->post_id; ?>" onsubmit="return likeSubmit();">
+								<button class="btn like_button_<?php echo $myposts->post_id; ?> like_button_hover" style="padding-top:0px;padding-bottom:0px;"><i class="fas fa-hand-holding-heart like_icon_<?php echo $myposts->post_id; ?> like_icon_hover" style="margin-left: -12px;padding-bottom: 2px;"><span style="margin-left:2px;"><?php echo $myposts->post_likes_count; ?> feel better<?php
+								if($myposts->post_likes_count>1){
+									echo "s";
+								}
+								?></span></i></button>
+							</form></div>
+  <div class="p-2">3 comments</div>
+  <div class="p-2"><?php echo $myposts->post_date; ?></div>
+  <div class="p-2">posted by: <?php echo $myposts->post_author; ?></div>
+</div></div>
+							
+				<?php endif; ?></div><br>
+				<?php
+				}
+				?>
 			</div>
 		</div>
 	</div>

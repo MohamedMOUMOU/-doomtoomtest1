@@ -273,28 +273,6 @@ class User{
 		$friendship_requests_count = $this->db->rowCount();
 		return $friendship_requests_count;
 	}
-	public function add_as_friend($user_id){
-		$this->db->query("SELECT * FROM friends WHERE (user_id = :current_user_id AND request_friend_id = :user_id AND friend_id = 0) OR (user_id = 0 AND request_friend_id = :user_id AND friend_id = :current_user_id)");
-		$this->db->bind(':current_user_id', $_SESSION['user_id']);
-		$this->db->bind(':user_id', $user_id);
-		$this->db->execute();
-		if($this->db->rowCount() < 2){
-			$false = 'false';
-			$this->db->query("INSERT INTO friends(user_id,request_friend_id,time_of_request,validated) VALUES(:current_user_id,:user_id,:time_of_request,:false)");
-			$this->db->bind(':current_user_id', $_SESSION['user_id']);
-			$this->db->bind(':user_id', $user_id);
-			$this->db->bind(':time_of_request', time());
-			$this->db->bind(':false', $false);
-			$this->db->execute();
-			$this->db->query("INSERT INTO friends(friend_id,request_friend_id,time_of_request,validated) VALUES(:current_user_id,:user_id,:time_of_request,:false)");
-			$this->db->bind(':current_user_id', $_SESSION['user_id']);
-			$this->db->bind(':user_id', $user_id);
-			$this->db->bind(':time_of_request', time());
-			$this->db->bind(':false', $false);
-			$this->db->execute();
-			redirect('users/search_for_friends');
-		}
-	}
 	public function deny_request($user_id){
 		$true = "true";
 		$this->db->query("DELETE FROM friends WHERE (user_id = :user_id AND request_friend_id = :current_user_id) OR (friend_id = :user_id AND request_friend_id = :current_user_id)");
@@ -306,17 +284,20 @@ class User{
 	}
 	public function confirm_request($user_id){
 		$true = "true";
-		$this->db->query("UPDATE friends SET friend_id = :current_user_id, validated = :true WHERE user_id = :user_id AND request_friend_id = :current_user_id");
+		$this->db->query("INSERT INTO friends(friend_id,request_friend_id,time_of_request,validated,user_id) VALUES(:current_user_id,:user_id,:time_of_request,:true,:user_id)");
 		$this->db->bind(':current_user_id', $_SESSION['user_id']);
 		$this->db->bind(':user_id', $user_id);
 		$this->db->bind(':true', $true);
+		$this->db->bind(':time_of_request', time());
 		$this->db->execute();
-		$this->db->query("UPDATE friends SET user_id = :current_user_id, validated = 'true' WHERE friend_id = :user_id AND request_friend_id = :current_user_id");
+		$this->db->query("INSERT INTO friends(friend_id,request_friend_id,time_of_request,validated,user_id) VALUES(:user_id,:user_id,:time_of_request,:true,:current_user_id)");
 		$this->db->bind(':current_user_id', $_SESSION['user_id']);
 		$this->db->bind(':user_id', $user_id);
 		$this->db->bind(':true', $true);
+		$this->db->bind(':time_of_request', time());
 		$this->db->execute();
-		redirect('users/search_for_friends');
+		redirect('chats/read/' . $_SESSION['user_id'] . "/" . $user_id);
+		die();
 	}
 	public function block_friend($user_id){
 		$this->db->query("DELETE FROM friends WHERE (user_id = :user_id AND friend_id = :current_user_id) OR (user_id = :current_user_id AND friend_id = :user_id)");

@@ -4,11 +4,11 @@ class Group{
 		$this->db = new Database;
 	}
 	public function add($data){
-		$this->db->query('INSERT INTO groups(group_name,group_image,group_b_image,creator_id,members_ids) VALUES(:group_name,:group_image,:group_b_image,:creator_id,:members_ids)');
+		$this->db->query('INSERT INTO groups(group_name,group_theme,group_image,group_b_image,creator_id) VALUES(:group_name,:group_theme,:group_image,:group_b_image,:creator_id)');
 		$creator_id = $_SESSION['user_id'];
 		$group_image = $data['group_image'];
 		$group_name = $data['group_name'];
-		$members_ids = $data['members_ids'];
+		$group_theme = $data['group_theme'];
 		$num = rand(0,999999999999);
 		$group_image = $_SESSION['user_role'] . $num . $data['group_image']['name'];
 		$group_image_temp = $data['group_image']['tmp_name'];
@@ -28,7 +28,7 @@ class Group{
 		$this->db->bind(':group_image', $group_image);
 		$this->db->bind(':group_b_image', $group_b_image);
 		$this->db->bind(':group_name', $group_name);
-		$this->db->bind(':members_ids', $members_ids);
+		$this->db->bind(':group_theme', $group_theme);
 		$group = $this->db->execute();
 		if($group){
 			return true;
@@ -39,6 +39,10 @@ class Group{
 	public function find_group_by_creator_id($creator_id){
 		$this->db->query("SELECT group_name FROM groups WHERE creator_id = :creator_id");
 		$this->db->bind(':creator_id', $creator_id);
+		return $this->db->resultSet();
+	}
+	public function readgroups(){
+		$this->db->query("SELECT * FROM groups ORDER BY group_id DESC");
 		return $this->db->resultSet();
 	}
 	public function find_group_by_id($group_id){
@@ -89,5 +93,23 @@ class Group{
 	public function get_all_groups(){
 		$this->db->query('SELECT group_id FROM groups');
 		return $this->db->resultSet();
+	}
+	public function joingroup($group_id){
+		$this->db->query("SELECT * FROM groups WHERE group_id = :group_id");
+		$this->db->bind(':group_id', $group_id);
+		$group =  $this->db->single();
+		$members_ids = $group->members_ids;
+		if($group->members_ids == null){
+			$this->db->query("UPDATE groups SET members_ids = :members_ids WHERE group_id = :group_id");
+			$this->db->bind(':members_ids', $_SESSION['user_id']);
+			$this->db->bind(':group_id', $group_id);
+			return $this->db->execute();
+		}else{
+		$new_members_ids = $members_ids . "," . $_SESSION['user_id'];
+		$this->db->query("UPDATE groups SET members_ids = :members_ids WHERE group_id = :group_id");
+		$this->db->bind(':members_ids', $new_members_ids);
+		$this->db->bind(':group_id', $group_id);
+		return $this->db->execute();
+		}
 	}
 }

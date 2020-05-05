@@ -1,15 +1,21 @@
 <?php ini_set("memory_limit", "16M") ?>
-<?php $url = manage_urls(); ?>
+<?php $url = manage_urls();
+if($url[0] == "users"){
+	
+}
+elseif(!isset($_SESSION['user_id'])){
+  redirect("pages/mainpage");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href="<?php echo URLROOT; ?>/node_modules\font-awesome\css\font-awesome.min.css" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" href="<?php echo URLROOT; ?>\node_modules\slick-carousel\slick\slick-theme.css">
-	<link rel="stylesheet" href="<?php echo URLROOT; ?>\node_modules\slick-carousel\slick\slick.css">
-	<link rel="stylesheet" href="<?php echo URLROOT; ?>\node_modules\bootstrap\dist\css\bootstrap.css">
+	<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link rel="stylesheet" href="<?php echo URLROOT; ?>/css/style.css">
+	<?php if(!$url): ?>
 	<?php if(($url[0] == "chats" && $url[1] == "read") || ($url[0] == "groups" && $url[1] == "read")): ?>
 		<link rel="stylesheet" href="<?php echo URLROOT; ?>/css/chat.css">
 	<?php endif; ?>
@@ -31,6 +37,7 @@
 				background-size: cover;
 			}
 		<?php endif; ?>
+		<?php endif; ?>
 	</style>
 </head>
 <!-- <script type="text/javascript">
@@ -42,4 +49,4 @@ jQuery('#load-screen').delay(700).fadeout(600,function(){
 });
 });
 </script> -->
-<body style="font-family: cursive;">
+<body style="font-family: arial;">

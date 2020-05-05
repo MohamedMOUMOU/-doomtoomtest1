@@ -5,7 +5,7 @@ class Post{
 	}
 	public function insertPostData($data){
 		$posts_galleries = new Postsgalleries;
-		$this->db->query('INSERT INTO posts(post_user_id,post_category_id,post_title,post_author,post_image,post_content,post_status,post_date) VALUES(:post_user_id,:post_category_id,:post_title,:post_author,:post_image,:post_content,:post_status,:post_date)');
+		$this->db->query('INSERT INTO posts(post_user_id,post_category_id,post_title,post_author,post_image,post_content,post_status,post_date,post_request_help) VALUES(:post_user_id,:post_category_id,:post_title,:post_author,:post_image,:post_content,:post_status,:post_date,:post_request_help)');
 		$post_user_id = $_SESSION['user_id'];
 		$post_category_id = $data['post_category_id'];
 		$post_title = $data['post_title'];
@@ -19,6 +19,7 @@ class Post{
 		$post_content = $data['post_content'];
 		$post_status = $data['post_status'];
 		$post_date = date('F j, Y \a\t h:i A');
+		$post_request_help = $data['post_request_help'];
 		move_uploaded_file($post_image_temp,$_SERVER['DOCUMENT_ROOT'] . "\mymvc\public\images\posts_images\\" . $_SESSION['user_name'] . "_images\\" . $post_image);
 		$this->db->bind(':post_user_id', $post_user_id);
 		$this->db->bind(':post_category_id', $post_category_id);
@@ -28,6 +29,7 @@ class Post{
 		$this->db->bind(':post_content', $post_content);
 		$this->db->bind(':post_status', $post_status);
 		$this->db->bind(':post_date', $post_date);
+		$this->db->bind(':post_request_help', $post_request_help);
 		$post = $this->db->execute();
 		$this->db->query("SELECT post_id FROM posts WHERE post_image = :post_image");
 		$this->db->bind(':post_image', $post_image);
@@ -45,6 +47,29 @@ class Post{
 		}else{
 			return false;
 		}
+	}
+	public function insertDiaryData($data){
+		$posts_galleries = new Postsgalleries;
+		$this->db->query('INSERT INTO posts(post_user_id,post_category_id,post_title,post_author,post_content,post_status,post_date,post_request_help,diary_lesson_learnt) VALUES(:post_user_id,:post_category_id,:post_title,:post_author,:post_content,:post_status,:post_date,:post_request_help,:diary_lesson_learnt)');
+		$post_user_id = $_SESSION['user_id'];
+		$post_category_id = 15;
+		$post_title = $data['post_title'];
+		$post_author = $_SESSION['user_name'];
+		$post_content = $data['post_content'];
+		$post_status = $data['post_status'];
+		$post_date = date('F j, Y \a\t h:i A');
+		$post_request_help = $data['post_request_help'];
+		$diary_lesson_learnt = $data['diary_lesson_learnt'];
+		$this->db->bind(':post_user_id', $post_user_id);
+		$this->db->bind(':post_category_id', $post_category_id);
+		$this->db->bind(':post_title', $post_title);
+		$this->db->bind(':post_author', $post_author);
+		$this->db->bind(':post_content', $post_content);
+		$this->db->bind(':post_status', $post_status);
+		$this->db->bind(':post_date', $post_date);
+		$this->db->bind(':post_request_help', $post_request_help);
+		$this->db->bind(':diary_lesson_learnt', $diary_lesson_learnt);
+		$post = $this->db->execute();
 	}
 	public function updatePostData($data,$post_id){
 		$posts_galleries = new Postsgalleries;
@@ -142,11 +167,8 @@ class Post{
 			}
 		}
 		$published = "published";
-		$this->db->query("SELECT posts.post_id, posts.post_user_id, posts.post_category_id, posts.post_title, posts.post_author, posts.post_date, posts.post_image, posts.post_content, posts.post_comment_count, posts.post_status, posts.post_views_count, posts.post_rating, posts.post_likes_count, posts.post_dislikes_count, friends.user_id, friends.friend_id FROM posts LEFT JOIN friends ON posts.post_user_id = friends.friend_id WHERE friends.user_id = :current_user_id AND posts.post_status = :published ORDER BY posts.post_id DESC LIMIT :myfriends_posts_page_1,:per_myfriends_posts_page");
-		$this->db->bind(':published', $published);
-		$this->db->bind(':current_user_id', $_SESSION['user_id']);
-		$this->db->bind(':myfriends_posts_page_1', $myfriends_posts_page_1);
-		$this->db->bind(':per_myfriends_posts_page', $per_myfriends_posts_page);
+		$this->db->query("SELECT * FROM posts WHERE post_user_id != :user_id ORDER BY post_id DESC");
+		$this->db->bind(':user_id', $_SESSION['user_id']);
 		$myfriends_posts = $this->db->resultSet();
 		return $myfriends_posts;
 	}
@@ -171,6 +193,17 @@ class Post{
 		$this->db->query("SELECT * FROM posts WHERE post_id = :post_id");
 		$this->db->bind(':post_id', $post_id);
 		return $this->db->single();
+	}
+	public function showMyDiaries(){
+		$this->db->query("SELECT * FROM posts WHERE post_user_id = :user_id AND post_category_id = :post_category_id ORDER BY post_id DESC");
+		$this->db->bind(':user_id', $_SESSION['user_id']);
+		$this->db->bind(':post_category_id', 15);
+		return $this->db->resultSet();
+	}
+	public function showMyParticipations(){
+		$this->db->query("SELECT * FROM posts WHERE post_user_id = :user_id ORDER BY post_id DESC");
+		$this->db->bind(':user_id', $_SESSION['user_id']);
+		return $this->db->resultSet();
 	}
 	public function lastSearchMyPosts(){
 		$search_category = 'search_myposts';
@@ -234,7 +267,7 @@ class Post{
 		}
 		$published = "published";
 		$last_search = $this->lastSearchMyFriendsPosts();
-		$this->db->query("SELECT posts.post_id, posts.post_user_id, posts.post_category_id, posts.post_title, posts.post_author, posts.post_date, posts.post_image, posts.post_content,posts.post_comment_count, posts.post_status, posts.post_dislikes_count, posts.post_likes_count, posts.post_rating, posts.post_views_count, friends.user_id, friends.friend_id FROM posts LEFT JOIN friends ON posts.post_user_id = friends.friend_id WHERE friends.user_id = :current_user_id AND post_status = :published AND post_title LIKE :last_myfriends_posts_search ORDER BY post_id DESC LIMIT :myfriends_posts_page_1,:per_myfriends_posts_page");
+		$this->db->query("SELECT posts.post_id,posts.post_request_help,posts.post_relates_count, posts.post_user_id, posts.post_category_id, posts.post_title, posts.post_author, posts.post_date, posts.post_image, posts.post_content,posts.post_comment_count, posts.post_status, posts.post_dislikes_count, posts.post_likes_count, posts.post_rating, posts.post_views_count, friends.user_id, friends.friend_id FROM posts LEFT JOIN friends ON posts.post_user_id = friends.friend_id WHERE friends.user_id = :current_user_id AND post_status = :published AND post_title LIKE :last_myfriends_posts_search ORDER BY post_id DESC LIMIT :myfriends_posts_page_1,:per_myfriends_posts_page");
 		$this->db->bind(':current_user_id', $_SESSION['user_id']);
 		$this->db->bind(':published', $published);
 		$this->db->bind(':last_myfriends_posts_search', $last_search);
@@ -285,6 +318,11 @@ class Post{
 		$this->db->bind(':post_user_id', $post_user_id);
 		$this->db->execute();
 		return $this->db->rowCount();
+	}
+	public function show_posts_by_user_id($user_id){
+		$this->db->query("SELECT post_id,post_title,post_image,post_user_id,post_date,post_author,post_likes_count,post_content FROM posts WHERE post_user_id = :user_id");
+		$this->db->bind(':user_id', $user_id);
+		return $this->db->resultSet();
 	}
 }
 ?>

@@ -77,32 +77,15 @@ $for_myfriends = $myfriends_page + 1;
 								<img class="img-fluid mt-3" style="height:70px;width:70px;border-radius:250px;" src="<?php echo $profile_image; ?>" alt="">
 								<p><?php echo $users->user_name; ?></p>
 								<?php
-                if($message == "accept"):
-                ?>
-                <div class="text-center">
-                    <form action="<?php echo URLROOT; ?>/users/accept/<?php echo $users->user_id; ?>" method="post" class="">
-                        <input type="submit" style="border-radius: 0;" class="btn btn-primary btn-block" name="accept_request<?php echo $users->user_id ; ?>" value="confirm">
-                    </form>
-                    <form action="<?php echo URLROOT; ?>/users/deny/<?php echo $users->user_id; ?>" method="post" class="">
-                        <input type="submit" class="btn btn-warning btn-block" name="deny_request<?php echo $users->user_id; ?>" style="border-radius: 0;" value="deny">
-                    </form>
-                  </div>
-                <?php
-                elseif($message == "not friend"):
-                ?>
-                    <form action="<?php echo URLROOT; ?>/users/add/<?php echo $users->user_id; ?>" method="post">
-                        <input type="submit" style="border-radius: 0;" class="btn btn-primary btn-block" name="send_request<?php echo $users->user_id ; ?>" value="Add as a friend">
-                    </form>
-                <?php
-                elseif($message == "block"):
+                if($message == "block"):
                 ?>
                 	<a href="<?php echo URLROOT . "/chats/read/{$_SESSION['user_id']}/{$users->user_id}" ?>" style="border-radius: 0px;" class="btn btn-primary btn-block"> Send message</a>
-                    <form action="<?php echo URLROOT; ?>/users/block/<?php echo $users->user_id; ?>" method="post">
-                        <input type="submit" style="border-radius: 0px;" class="btn btn-danger btn-block" name="block<?php echo $users->user_id ; ?>" value="block">
-                    </form>
                 <?php
                 else:
-                    echo "<p class='ml-1 mr-1 text-muted' style='font-size: 12px;'>" . $message . "</p>";
+                    ?>
+					<form action="<?php echo URLROOT; ?>/users/accept/<?php echo $users->user_id; ?>" method="post" class="">
+                        <input type="submit" style="border-radius: 0;" class="btn btn-primary btn-block" name="accept_request<?php echo $users->user_id ; ?>" value="send message">
+                    </form><?php
                 endif;
                 ?>
 							</div>

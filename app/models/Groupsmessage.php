@@ -6,22 +6,13 @@ class Groupsmessage{
 	public function send_message($sender_id, $group_id){
 		$user = new Users();
 		$group = new Groups();
-		$num = rand(0,999999999999);
-		$group_message_file = $_SESSION['user_id'] . $num . $_FILES['group_file']['name'];
-		$group_message_file_temp = $_FILES['group_file']['tmp_name'];
 		$creator_id = $group->find_group_by_id($group_id)->creator_id;
 		$creator_name = $user->findUserById($creator_id)->user_name;
 		$group_name = $group->find_group_by_id($group_id)->group_name;
-		move_uploaded_file($group_message_file_temp,$_SERVER['DOCUMENT_ROOT'] . "\mymvc\public\images\groups_images\\" . $creator_name . "_" . $group_name . "_images\group_files\\" . $group_message_file);
-		if(substr(mime_content_type($_SERVER['DOCUMENT_ROOT'] . "\mymvc\public\images\groups_images\\" . $creator_name . "_" . $group_name . "_images\group_files\\" . $group_message_file),0,5) == "image"){
-			$group_message_file = "<img style='width:100%;margin: 10px 0;' src='" . URLROOT . "\images\groups_images\\" . $creator_name . "_" . $group_name . "_images\group_files\\" . $group_message_file . "'><br>";
-		}elseif(substr(mime_content_type($_SERVER['DOCUMENT_ROOT'] . "\mymvc\public\images\groups_images\\" . $creator_name . "_" . $group_name . "_images\group_files\\" . $group_message_file),0,5) == "video"){
-			$group_message_file = "<video style='width:100%;margin: 10px 0;' controls><source src='" . URLROOT . "\images\groups_images\\" . $creator_name . "_" . $group_name . "_images\group_files\\" . $group_message_file . "'>></video><br>";
-		}
 		$this->db->query("INSERT INTO group_chats(sender_id,group_id,message) VALUES(:sender_id,:group_id,:message)");
 		$this->db->bind(':sender_id', $sender_id);
 		$this->db->bind(':group_id', $group_id);
-		$this->db->bind(':message', $group_message_file . $_POST['group_message']);
+		$this->db->bind(':message', $_POST['group_message']);
 		return $this->db->execute();
 	}
 	public function read_group_messages($group_id){

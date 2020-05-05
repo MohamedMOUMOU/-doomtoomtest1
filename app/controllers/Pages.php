@@ -5,13 +5,30 @@ class Pages extends Controller{
 		$this->postController = $this->controller('Posts');
 		$this->categoryController = $this->controller('Categories');
 		$this->likesController = $this->controller('Likes');
+		$this->relatesController = $this->controller('Relates');
 		$this->dislikesController = $this->controller('Dislikes');
 		$this->groupsController = $this->controller('Groups');
 		$this->postModel = $this->model('Post');
 	}
+	public function showmydiaries(){
+		$user = new Users();
+		$data = [
+			'show_diary' => $this->postModel->showMyDiaries(),
+			'logged_in_user' => $user->getUserInfo()
+		];
+		$this->view('posts/showmydiaries', $data);
+	}
+	public function showmyparticipations(){
+		$user = new Users();
+		$data = [
+			'show_my_participations' => $this->postModel->showMyParticipations(),
+			'logged_in_user' => $user->getUserInfo()
+		];
+		$this->view('posts/showmyparticipations', $data);
+	}
 	public function index($myposts_page = 1,$myfriends_posts_page = 1,$display = ''){
 		$per_myposts_page = 5;
-		$per_myfriends_posts_page = 5;
+		$per_myfriends_posts_page = 12345678;
 		if($display === 'search'){
 			$myfriends_posts = $this->postModel->displayMyFriendsPosts($per_myfriends_posts_page,$myfriends_posts_page);
 			$myposts = $this->postModel->displayMyPostsSearch($per_myposts_page,$myposts_page);
@@ -54,6 +71,14 @@ class Pages extends Controller{
 	public function about(){
 		$data = ['title' => 'About page'];
 		$this->view('pages/about', $data);
+	}
+	public function mainpage(){
+		$data = ['title' => 'About page'];
+		$this->view('pages/mainpage', $data);
+	}
+	public function diaries(){
+		$data = ['title' => 'About page'];
+		$this->view('pages/diaries', $data);
 	}
 }
 ?>
